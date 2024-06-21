@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:h_tasksday/components/drawor.dart';
 import 'package:h_tasksday/models/note.dart';
@@ -162,6 +163,10 @@ class _NotesPageState extends State<NotesPage> {
     context.read<NoteDatabase>().deleteNote(id);
   }
 
+  void test(Note note) {
+    context.read<NoteDatabase>().completed(note.id, textController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     //получение доступа к базе данных
@@ -270,37 +275,57 @@ class _NotesPageState extends State<NotesPage> {
                             ),
                             child: Center(
                               child: GestureDetector(
-                                onLongPress: () {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Текст скопирован'),
+                                  onLongPress: () {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Текст скопирован'),
+                                      ),
+                                    );
+                                    Clipboard.setData(ClipboardData(
+                                        text: note.text.toString()));
+                                  },
+                                  child: ListTile(
+                                    leading: Transform.scale(
+                                      scale: 1.2,
+                                      child: Checkbox(
+                                        value: note.completed,
+                                        activeColor: Colors.green,
+                                        side: BorderSide(
+                                          width: 1.5,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .inversePrimary,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(5.0),
+                                          ),
+                                        ),
+                                        onChanged: (bool? value) {
+                                          test(note);
+                                        },
+                                      ),
                                     ),
-                                  );
-                                  Clipboard.setData(ClipboardData(
-                                      text: note.text.toString()));
-                                },
-                                child: ListTile(
-                                  subtitle: Text(
-                                    "${note.createdTime!.hour}:${note.createdTime!.minute}",
-                                    style: const TextStyle(
-                                      fontSize: 12,
+                                    subtitle: Text(
+                                      "${note.createdTime!.hour}:${note.createdTime!.minute}",
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
                                     ),
-                                  ),
-                                  onTap: () {},
-                                  //текст заметки
-                                  title: Text(
-                                    note.text.toString(),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 17,
+                                    onTap: () {},
+                                    //текст заметки
+                                    title: Text(
+                                      note.text.toString(),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                      ),
                                     ),
-                                  ),
-                                  trailing: IconButton(
-                                      onPressed: () => updateNote(note),
-                                      icon: const Icon(Icons.edit)),
-                                ),
-                              ),
+                                    trailing: IconButton(
+                                        onPressed: () => updateNote(note),
+                                        icon: const Icon(Icons.edit)),
+                                  )),
                             ),
                           ),
                         ),
@@ -319,7 +344,7 @@ class _NotesPageState extends State<NotesPage> {
                         decoration: BoxDecoration(
                             color: Theme.of(context).colorScheme.primary,
                             borderRadius: BorderRadius.circular(8)),
-                        padding: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.all(2),
                         margin: const EdgeInsets.only(
                             top: 10, left: 10, right: 10, bottom: 10),
                         child: Stack(
@@ -338,7 +363,7 @@ class _NotesPageState extends State<NotesPage> {
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.only(
-                                      top: 30, left: 20, right: 35, bottom: 20),
+                                      top: 45, left: 20, right: 25, bottom: 21),
                                   child: Text(
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 4,
@@ -389,6 +414,30 @@ class _NotesPageState extends State<NotesPage> {
                                   style: const TextStyle(
                                     fontSize: 12,
                                   ),
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Transform.scale(
+                                scale: 1.2,
+                                child: Checkbox(
+                                  value: note.completed,
+                                  activeColor: Colors.green,
+                                  side: BorderSide(
+                                    width: 1.5,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .inversePrimary,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(5.0),
+                                    ),
+                                  ),
+                                  onChanged: (bool? value) {
+                                    test(note);
+                                  },
                                 ),
                               ),
                             ),

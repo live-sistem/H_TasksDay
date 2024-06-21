@@ -17,13 +17,18 @@ const NoteSchema = CollectionSchema(
   name: r'Note',
   id: 6284318083599466921,
   properties: {
-    r'createdTime': PropertySchema(
+    r'completed': PropertySchema(
       id: 0,
+      name: r'completed',
+      type: IsarType.bool,
+    ),
+    r'createdTime': PropertySchema(
+      id: 1,
       name: r'createdTime',
       type: IsarType.dateTime,
     ),
     r'text': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'text',
       type: IsarType.string,
     )
@@ -63,8 +68,9 @@ void _noteSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeDateTime(offsets[0], object.createdTime);
-  writer.writeString(offsets[1], object.text);
+  writer.writeBool(offsets[0], object.completed);
+  writer.writeDateTime(offsets[1], object.createdTime);
+  writer.writeString(offsets[2], object.text);
 }
 
 Note _noteDeserialize(
@@ -74,9 +80,10 @@ Note _noteDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Note();
-  object.createdTime = reader.readDateTimeOrNull(offsets[0]);
+  object.completed = reader.readBool(offsets[0]);
+  object.createdTime = reader.readDateTimeOrNull(offsets[1]);
   object.id = id;
-  object.text = reader.readStringOrNull(offsets[1]);
+  object.text = reader.readStringOrNull(offsets[2]);
   return object;
 }
 
@@ -88,8 +95,10 @@ P _noteDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 1:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 2:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -184,6 +193,15 @@ extension NoteQueryWhere on QueryBuilder<Note, Note, QWhereClause> {
 }
 
 extension NoteQueryFilter on QueryBuilder<Note, Note, QFilterCondition> {
+  QueryBuilder<Note, Note, QAfterFilterCondition> completedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'completed',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterFilterCondition> createdTimeIsNull() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(const FilterCondition.isNull(
@@ -455,6 +473,18 @@ extension NoteQueryObject on QueryBuilder<Note, Note, QFilterCondition> {}
 extension NoteQueryLinks on QueryBuilder<Note, Note, QFilterCondition> {}
 
 extension NoteQuerySortBy on QueryBuilder<Note, Note, QSortBy> {
+  QueryBuilder<Note, Note, QAfterSortBy> sortByCompleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterSortBy> sortByCompletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completed', Sort.desc);
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterSortBy> sortByCreatedTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdTime', Sort.asc);
@@ -481,6 +511,18 @@ extension NoteQuerySortBy on QueryBuilder<Note, Note, QSortBy> {
 }
 
 extension NoteQuerySortThenBy on QueryBuilder<Note, Note, QSortThenBy> {
+  QueryBuilder<Note, Note, QAfterSortBy> thenByCompleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completed', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Note, Note, QAfterSortBy> thenByCompletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'completed', Sort.desc);
+    });
+  }
+
   QueryBuilder<Note, Note, QAfterSortBy> thenByCreatedTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createdTime', Sort.asc);
@@ -519,6 +561,12 @@ extension NoteQuerySortThenBy on QueryBuilder<Note, Note, QSortThenBy> {
 }
 
 extension NoteQueryWhereDistinct on QueryBuilder<Note, Note, QDistinct> {
+  QueryBuilder<Note, Note, QDistinct> distinctByCompleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'completed');
+    });
+  }
+
   QueryBuilder<Note, Note, QDistinct> distinctByCreatedTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'createdTime');
@@ -537,6 +585,12 @@ extension NoteQueryProperty on QueryBuilder<Note, Note, QQueryProperty> {
   QueryBuilder<Note, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<Note, bool, QQueryOperations> completedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'completed');
     });
   }
 

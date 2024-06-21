@@ -98,10 +98,9 @@ class PersonePage extends StatelessWidget {
   }
 
   void _launchURL() async {
+    //https://github.com/live-sistem/H_TasksDay
     var httpsUri = Uri(
-      scheme: 'https',
-      host: 'google.com',
-    );
+        scheme: 'https', host: 'github.com', path: 'live-sistem/H_TasksDay');
 
     // Uri url = https://github.com/;
     if (await canLaunchUrl(httpsUri)) {
@@ -109,3 +108,9 @@ class PersonePage extends StatelessWidget {
     }
   }
 }
+
+var httpsUri = Uri(
+    scheme: 'https',
+    host: 'dart.dev',
+    path: '/guides/libraries/library-tour',
+    fragment: 'numbers');

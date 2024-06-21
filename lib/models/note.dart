@@ -8,4 +8,5 @@ class Note {
   Id id = Isar.autoIncrement;
   String? text;
   DateTime? createdTime;
+  bool completed = false;
 }

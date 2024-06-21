@@ -54,6 +54,20 @@ class NoteDatabase extends ChangeNotifier {
     }
   }
 
+  Future<void> completed(int id, String newText) async {
+    final existingNote = await isar.notes.get(id);
+    if (existingNote != null) {
+      if (existingNote.completed == false) {
+        existingNote.completed = true;
+      } else {
+        existingNote.completed = false;
+      }
+
+      await isar.writeTxn(() => isar.notes.put(existingNote));
+      await fetchNotes();
+    }
+  }
+
   // DELETE IN DB
   Future<void> deleteNote(int id) async {
     await isar.writeTxn(() => isar.notes.delete(id));
